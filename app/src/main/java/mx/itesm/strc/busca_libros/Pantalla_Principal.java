@@ -1,11 +1,13 @@
 package mx.itesm.strc.busca_libros;
 
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.SearchView;
 
 public class Pantalla_Principal extends AppCompatActivity {
@@ -26,6 +28,8 @@ public class Pantalla_Principal extends AppCompatActivity {
             FragmentTransaction transaccion = getSupportFragmentManager().beginTransaction();
             transaccion.replace(R.id.fragment, res);
             transaccion.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+            ConstraintLayout fl = (ConstraintLayout) findViewById(R.id.fragment);
+            fl.removeAllViews();
             transaccion.addToBackStack(null);
             transaccion.commit();
         } else{

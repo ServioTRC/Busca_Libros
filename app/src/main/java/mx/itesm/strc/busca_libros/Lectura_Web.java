@@ -37,12 +37,13 @@ public class Lectura_Web {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.i("Bien", "autores");
                         try {
                             JSONArray arrItems = response.getJSONArray("items");
                             JSONObject  item = arrItems.getJSONObject(0);
                             JSONObject info = item.getJSONObject("volumeInfo");
                             Lectura_Web.titulo = "\t" + info.getString("title");
-
+                            Log.i("Bien", Lectura_Web.titulo);
                             JSONArray autores = info.getJSONArray("authors");
                             String autores_res = "\t";
                             for(int i = 0; i < autores.length(); i++){
@@ -50,16 +51,16 @@ public class Lectura_Web {
                                 autores_res += autores.getString(i);
                             }
                             Lectura_Web.autores = autores_res;
+                            Log.i("Bien", "autores");
 
                             Lectura_Web.descripcion = info.getString("description");
+                            Log.i("Bien", "descripcion");
 
                             JSONObject imagenLink = info.getJSONObject("imageLinks");
                             String imagen = imagenLink.getString("thumbnail");
-
-
                             Lectura_Web.descargarImagenLibro(imagen);
 
-                        } catch (JSONException e) {
+                        } catch (Exception e) {
                             Log.i("Lectura web", e.toString());
                             Lectura_Web.response = false;
                         }
@@ -70,6 +71,7 @@ public class Lectura_Web {
                         Lectura_Web.response = false;
                     }
                 });
+
         return Lectura_Web.response;
     }
 
