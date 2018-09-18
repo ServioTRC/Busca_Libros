@@ -41,9 +41,12 @@ public class Resultados extends Fragment {
     private TextView titulo;
     private TextView autores;
     private TextView descripcion;
+    private TextView isbn_display;
     private ImageView portada;
+    private ImageView libro_no;
     private TextView coincidencias;
     private LinearLayout datos;
+    private LinearLayout no_encontrado;
 
 
 
@@ -73,9 +76,13 @@ public class Resultados extends Fragment {
             coincidencias = v.findViewById(R.id.coincidencias);
             datos = v.findViewById(R.id.datos);
             portada = v.findViewById(R.id.imagen_portada);
+            isbn_display = v.findViewById(R.id.isbn);
+            libro_no = v.findViewById(R.id.libro_no);
+            no_encontrado = v.findViewById(R.id.error);
 
             datos.setVisibility(View.GONE);
             coincidencias.setVisibility(View.GONE);
+            no_encontrado.setVisibility(View.GONE);
             String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
             new TareaDescarga().execute(url);
         }
@@ -125,6 +132,8 @@ public class Resultados extends Fragment {
                 String imagen = imagenLink.getString("thumbnail");
                 descargarImagenLibro(imagen);
 
+                isbn_display.setText("\t" + isbn);
+
             } catch (Exception e) {
                 Log.i("Lectura web", e.toString());
                 res = "Error Json";
@@ -155,7 +164,10 @@ public class Resultados extends Fragment {
         @Override
         protected void onPreExecute() {
             coincidencias.setText("Buscando\ncoincidencias\nde ISBN");
+            libro_no.setVisibility(View.GONE);
             coincidencias.setVisibility(View.VISIBLE);
+            no_encontrado.setVisibility(View.VISIBLE);
+
         }
 
         @Override
@@ -164,15 +176,12 @@ public class Resultados extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             if(res.equals("Correcto")){
-                coincidencias.setVisibility(View.GONE);
+                no_encontrado.setVisibility(View.GONE);
                 datos.setVisibility(View.VISIBLE);
             } else {
-                coincidencias.setText("Vuelva a\nintentar su\nbúsqueda");
-                AlertDialog.Builder dialogo = new AlertDialog.Builder(getContext());
-                dialogo.setTitle("Aviso")
-                        .setMessage("ISBN no encontrado, vuelva a intentar")
-                        .setPositiveButton("Aceptar", null)
-                        .show();
+                no_encontrado.setVisibility(View.VISIBLE);
+                libro_no.setVisibility(View.VISIBLE);
+                coincidencias.setText("ISBN no\n encontrado\n("+isbn+")\n\nVuelva a\ningresar su\nbúsqueda");
             }
         }
     }
