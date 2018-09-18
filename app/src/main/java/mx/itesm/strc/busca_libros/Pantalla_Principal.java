@@ -1,5 +1,6 @@
 package mx.itesm.strc.busca_libros;
 
+import android.os.AsyncTask;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -9,6 +10,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
+
+import java.net.URL;
 
 public class Pantalla_Principal extends AppCompatActivity {
 
@@ -23,21 +26,17 @@ public class Pantalla_Principal extends AppCompatActivity {
 
     public void iniciarBusqueda(View v){
         String input = isbn.getText().toString();
-        if(Lectura_Web.validar_existencia(input)){
-            Resultados res = new Resultados();
-            FragmentTransaction transaccion = getSupportFragmentManager().beginTransaction();
-            transaccion.replace(R.id.fragment, res);
-            transaccion.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-            ConstraintLayout fl = (ConstraintLayout) findViewById(R.id.fragment);
-            fl.removeAllViews();
-            transaccion.addToBackStack(null);
-            transaccion.commit();
-        } else{
-            AlertDialog.Builder dialogo = new AlertDialog.Builder(this);
-            dialogo.setTitle("Aviso")
-                    .setMessage("ISBN no encontrado")
-                    .setPositiveButton("Aceptar", null)
-                    .show();
-        }
+        Resultados res = new Resultados();
+        res.setIsbn(input);
+        FragmentTransaction transaccion = getSupportFragmentManager().beginTransaction();
+        transaccion.addToBackStack(null);
+        transaccion.replace(R.id.fragment, res);
+        transaccion.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        ConstraintLayout fl = (ConstraintLayout) findViewById(R.id.fragment);
+        fl.removeAllViews();
+        transaccion.commit();
     }
 }
+
+
+

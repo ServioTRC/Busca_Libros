@@ -1,12 +1,35 @@
 package mx.itesm.strc.busca_libros;
 
 
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.BitmapRequestListener;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
 /**
@@ -14,10 +37,23 @@ import android.widget.TextView;
  */
 public class Resultados extends Fragment {
 
+    private String isbn;
+    private TextView titulo;
+    private TextView autores;
+    private TextView descripcion;
+    private ImageView portada;
+    private TextView coincidencias;
+    private LinearLayout datos;
+
+
+
     public Resultados() {
         // Required empty public constructor
     }
 
+    public void setIsbn(String isbn){
+        this.isbn = isbn;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -31,12 +67,115 @@ public class Resultados extends Fragment {
         super.onStart();
         View v = getView();
         if( v != null){
-            TextView titulo = v.findViewById(R.id.titulo);
-            TextView autores = v.findViewById(R.id.autores);
-            TextView descripcion = v.findViewById(R.id.descripcion);
-            titulo.setText(Lectura_Web.titulo);
-            autores.setText(Lectura_Web.autores);
-            descripcion.setText(Lectura_Web.descripcion);
+            titulo = v.findViewById(R.id.titulo);
+            autores = v.findViewById(R.id.autores);
+            descripcion = v.findViewById(R.id.descripcion);
+            coincidencias = v.findViewById(R.id.coincidencias);
+            datos = v.findViewById(R.id.datos);
+            portada = v.findViewById(R.id.imagen_portada);
+
+            datos.setVisibility(View.GONE);
+            coincidencias.setVisibility(View.GONE);
+            String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
+            new TareaDescarga().execute(url);
         }
     }
+
+    private class TareaDescarga extends AsyncTask<String, Void, String> {
+        String res;
+
+        @Override
+        protected String doInBackground(String... urls) {
+            res = "Correcto";
+            try {
+                URL url = new URL(urls[0]);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+                StringBuilder builder = new StringBuilder();
+
+                String inputString;
+                while ((inputString = bufferedReader.readLine()) != null) {
+                    builder.append(inputString);
+                }
+
+                JSONObject response = new JSONObject(builder.toString());
+
+                JSONArray arrItems = response.getJSONArray("items");
+                JSONObject  item = arrItems.getJSONObject(0);
+                JSONObject info = item.getJSONObject("volumeInfo");
+                titulo.setText("\t" + info.getString("title"));
+                Log.i("Bien", titulo.getText().toString());
+
+                JSONArray autores_json = info.getJSONArray("authors");
+                String autores_res = "\t";
+                for(int i = 0; i < autores_json.length(); i++){
+                    autores_res += autores_json.getString(i);
+                    if(i != autores_json.length() - 1)
+                        autores_res += ", ";
+                }
+                autores.setText(autores_res);
+                Log.i("Bien", autores_res);
+
+                descripcion.setText(info.getString("description"));
+                Log.i("Bien", descripcion.getText().toString());
+
+                JSONObject imagenLink = info.getJSONObject("imageLinks");
+                String imagen = imagenLink.getString("thumbnail");
+                descargarImagenLibro(imagen);
+
+            } catch (Exception e) {
+                Log.i("Lectura web", e.toString());
+                res = "Error Json";
+            }
+            Log.i("Async", res);
+            return res;
+        }
+
+        private void descargarImagenLibro(String imagen){
+            imagen = imagen.replace("http:", "https:");
+            AndroidNetworking.get(imagen.toString())
+                    .setPriority(Priority.MEDIUM)
+                    .build()
+                    .getAsBitmap(new BitmapRequestListener() {
+                        @Override
+                        public void onResponse(Bitmap response) {
+                            portada.setImageBitmap(response);
+                            Log.i("Imagen", "Bien");
+                        }
+
+                        @Override
+                        public void onError(ANError anError) {
+                            Log.i("Lectura Imagen", anError.toString());
+                        }
+                    });
+        }
+
+        @Override
+        protected void onPreExecute() {
+            coincidencias.setText("Buscando\ncoincidencias\nde ISBN");
+            coincidencias.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... voids) {}
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(res.equals("Correcto")){
+                coincidencias.setVisibility(View.GONE);
+                datos.setVisibility(View.VISIBLE);
+            } else {
+                coincidencias.setText("Vuelva a\nintentar su\nbúsqueda");
+                AlertDialog.Builder dialogo = new AlertDialog.Builder(getContext());
+                dialogo.setTitle("Aviso")
+                        .setMessage("ISBN no encontrado, vuelva a intentar")
+                        .setPositiveButton("Aceptar", null)
+                        .show();
+            }
+        }
+    }
+
 }
+

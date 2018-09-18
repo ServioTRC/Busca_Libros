@@ -10,6 +10,7 @@
     <!-- TODO: Update blank fragment layout -->
 
     <LinearLayout
+        android:id="@+id/datos"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -17,6 +18,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,7 +27,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="#96b3feff">
 
             <ImageView
                 android:id="@+id/imagen_portada"
@@ -52,7 +55,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="    Título del Libro:"
+                        android:fontFamily="@font/alfa_slab_one"
+                        android:text="    Título del Libro"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -61,6 +65,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
+                        android:fontFamily="@font/alef"
                         android:text="Título del Libro:"
                         android:textSize="14sp" />
 
@@ -68,18 +73,30 @@
                         android:id="@+id/textView4"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="2"
+                        android:fontFamily="@font/alfa_slab_one"
                         android:text="    Autores"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textSize="18sp" />
 
-                    <TextView
-                        android:id="@+id/autores"
+                    <ScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="Título del Libro:"
-                        android:textSize="14sp" />
+                        android:layout_weight="2">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/autores"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/alef"
+                                android:text="TextView"
+                                tools:text="    Autores" />
+                        </LinearLayout>
+                    </ScrollView>
 
                 </LinearLayout>
 
@@ -89,7 +106,8 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="#befeca8e">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -100,8 +118,32 @@
                     android:id="@+id/descripcion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/alef"
                     android:text="TextView" />
             </LinearLayout>
         </ScrollView>
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/coincidencias"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:fontFamily="@font/alfa_slab_one"
+        android:text="Buscando\ncoincidencias\nde ISBN"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.021" />
+
 </android.support.constraint.ConstraintLayout>
