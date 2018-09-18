@@ -32,8 +32,8 @@ public class Pantalla_Principal extends AppCompatActivity {
         transaccion.addToBackStack(null);
         transaccion.replace(R.id.fragment, res);
         transaccion.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-        ConstraintLayout fl = (ConstraintLayout) findViewById(R.id.fragment);
-        fl.removeAllViews();
+        //ConstraintLayout fl = (ConstraintLayout) findViewById(R.id.fragment);
+        //fl.removeAllViews();
         transaccion.commit();
     }
 }
