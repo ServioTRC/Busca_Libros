@@ -42,6 +42,8 @@ public class Resultados extends Fragment {
     private TextView autores;
     private TextView descripcion;
     private TextView isbn_display;
+    private TextView año;
+    private TextView editorial;
     private ImageView portada;
     private ImageView libro_no;
     private TextView coincidencias;
@@ -79,6 +81,8 @@ public class Resultados extends Fragment {
             isbn_display = v.findViewById(R.id.isbn);
             libro_no = v.findViewById(R.id.libro_no);
             no_encontrado = v.findViewById(R.id.error);
+            año = v.findViewById(R.id.año);
+            editorial = v.findViewById(R.id.editorial);
 
             datos.setVisibility(View.GONE);
             coincidencias.setVisibility(View.GONE);
@@ -124,6 +128,14 @@ public class Resultados extends Fragment {
                 }
                 autores.setText(autores_res);
                 Log.i("Bien", autores_res);
+
+                String[] fecha = info.getString("publishedDate").split("-");
+                año.setText("\t" + fecha[0]);
+                Log.i("Bien", año.getText().toString());
+
+                String[] editorial_data = info.getString("publisher").split(";");
+                editorial.setText("\t" + editorial_data[0]);
+                Log.i("Bien", editorial.getText().toString());
 
                 descripcion.setText(info.getString("description"));
                 Log.i("Bien", descripcion.getText().toString());
